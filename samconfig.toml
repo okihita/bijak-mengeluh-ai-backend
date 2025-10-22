@@ -1,0 +1,23 @@
+version = 0.1
+
+[default.global.parameters]
+profile = "bijak-mengeluh-admin"
+stack_name = "cloudformation-stack-2025-aws-hackathon-bijak-mengeluh"
+region = "ap-southeast-2"
+
+[default.sync.parameters]
+template_file = "/Users/okihita/ArcaneSanctum/AWS/bijak-mengeluh-ai-backend/template.yaml"
+dependency_layer = false
+watch = true
+
+[default.sync.parameters.parameter_overrides]
+PineconeApiKey = "pcsk_4RKeLz_Nb4UVBoNvEXJLtNLU5w67VAecTgJ2788fwTXdzSWUnNvM1ekoJpZcTZe8ZhpYyh"
+PineconeIndexName = "2025-aws-hackathon"
+[default.deploy.parameters]
+resolve_s3 = true
+s3_prefix = "cloudformation-stack-2025-aws-hackathon-bijak-mengeluh"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "PineconeIndexName=\"2025-aws-hackathon\""
+image_repositories = []

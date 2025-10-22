@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM template for the AI Complaint Assistant backend.
+
+Parameters:
+  PineconeApiKey:
+    Type: String
+    NoEcho: true # Hides the key in logs
+    Description: API Key for Pinecone
+  PineconeIndexName:
+    Type: String
+    Description: Name of the Pinecone index
+    Default: 2025-aws-hackathon
+
+Resources:
+
+  # --- Define the HTTP API Separately ---
+  MyHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration: # <-- CORRECT LOCATION
+        AllowOrigins: ["*"] # Change for production
+        AllowHeaders: ["Content-Type"]
+        AllowMethods: ["POST", "OPTIONS"]
+        MaxAge: 600
+
+  # --- Define the Lambda Function ---
+  AicComplaintFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/ # Points to your code folder
+      Handler: lambda_functions.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          PINECONE_API_KEY: !Ref PineconeApiKey # Sets the env var from the parameter
+          PINECONE_INDEX_NAME: !Ref PineconeIndexName # Sets the env var from the parameter
+      Policies:
+        - AmazonBedrockFullAccess # Grants permissions to call Bedrock
+      Events:
+        GenerateApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MyHttpApi
+            Path: /generate
+            Method: post
+
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${MyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/generate
