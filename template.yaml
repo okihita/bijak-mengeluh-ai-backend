@@ -12,6 +12,10 @@ Parameters:
     Type: String
     Description: Name of the Pinecone index
     Default: 2025-aws-hackathon
+  SerperApiKey:
+    Type: String
+    NoEcho: true
+    Description: API Key for Serper.dev
 
 Resources:
 
@@ -49,9 +53,25 @@ Resources:
             ApiId: !Ref MyHttpApi
             Path: /generate
             Method: post
-
+  
+  # --- Define the Live Real Time People Search Function ---
+  BijakMengeluhSocialFinderFunction:
+    Type: AWS::Serverless::Function # Create a new Lambda function
+    Properties:
+      CodeUri: src/
+      Handler: social_finder.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          SERPER_API_KEY: !Ref SerperApiKey
+      Policies:
+        - AmazonBedrockFullAccess
 
 Outputs:
   ApiEndpoint:
-    Description: API Gateway endpoint URL
+    Description: API Gateway endpoint URL for Prod stage for Generate function
     Value: !Sub https://${MyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/generate
