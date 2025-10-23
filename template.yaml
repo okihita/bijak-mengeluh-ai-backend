@@ -35,7 +35,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
-      Timeout: 30
+      Timeout: 60
       Environment:
         Variables:
           PINECONE_API_KEY: !Ref PineconeApiKey # Sets the env var from the parameter
