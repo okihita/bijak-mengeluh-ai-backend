@@ -4,6 +4,7 @@ Description: >
   SAM template for the AI Complaint Assistant backend.
 
 Parameters:
+
   PineconeApiKey:
     Type: String
     NoEcho: true # Hides the key in logs
@@ -12,25 +13,62 @@ Parameters:
     Type: String
     Description: Name of the Pinecone index
     Default: 2025-aws-hackathon
+  
   SerperApiKey:
     Type: String
     NoEcho: true
     Description: API Key for Serper.dev
+  CacheTableName:
+    Type: String
+    Description: Name of the DynamoDB table for caching
+    Default: BijakMengeluhSocialsCacheTable
+  
+  BrandedApiDomainName:
+    Type: String
+    Description: Custom domain name for the API
+    Default: brain.bijakmengeluh.id
+  BrandedApiDomainCertificateArn:
+    Type: String
+    Description: ACM Certificate ARN for the custom domain
+    Default: arn:aws:acm:ap-southeast-2:986517526233:certificate/ccf38539-1caa-4ae9-8f86-70ab1b4408c0
 
 Resources:
 
+  # --- Define the DynamoDB Table for Caching ---
+  BijakMengeluhCacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref CacheTableName
+      AttributeDefinitions:
+        - AttributeName: "ministry_name"
+          AttributeType: S
+      KeySchema:
+        - AttributeName: "ministry_name"
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+
   # --- Define the HTTP API Separately ---
-  MyHttpApi:
+  ComplaintGenerationHttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      CorsConfiguration: # <-- CORRECT LOCATION
-        AllowOrigins: ["*"] # Change for production
+
+      CorsConfiguration:
+        AllowOrigins:
+          - 'http://localhost:3000'
+          - 'https://bijakmengeluh.id'
         AllowHeaders: ["Content-Type"]
         AllowMethods: ["POST", "OPTIONS"]
         MaxAge: 600
 
+      Domain:
+        DomainName: !Ref BrandedApiDomainName
+        CertificateArn: !Ref BrandedApiDomainCertificateArn
+        EndpointConfiguration: REGIONAL
+
+
   # --- Define the Lambda Function ---
-  AicComplaintFunction:
+  BijakMengeluhComplaintGenerationFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/ # Points to your code folder
@@ -44,13 +82,22 @@ Resources:
         Variables:
           PINECONE_API_KEY: !Ref PineconeApiKey # Sets the env var from the parameter
           PINECONE_INDEX_NAME: !Ref PineconeIndexName # Sets the env var from the parameter
+          CACHE_TABLE_NAME: !Ref CacheTableName
+          FINDER_FUNCTION_NAME: !GetAtt BijakMengeluhSocialFinderFunction.Arn
       Policies:
         - AmazonBedrockFullAccess # Grants permissions to call Bedrock
+        - DynamoDBCrudPolicy: # Grants CRUD permissions to the specified table
+            TableName: !Ref BijakMengeluhCacheTable
+        - Statement: # Custom IAM statement to allow invoking the finder function
+            Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource: !GetAtt BijakMengeluhSocialFinderFunction.Arn
       Events:
         GenerateApi:
           Type: HttpApi
           Properties:
-            ApiId: !Ref MyHttpApi
+            ApiId: !Ref ComplaintGenerationHttpApi
             Path: /generate
             Method: post
   
@@ -74,4 +121,7 @@ Resources:
 Outputs:
   ApiEndpoint:
     Description: API Gateway endpoint URL for Prod stage for Generate function
-    Value: !Sub https://${MyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/generate
+    Value: !Sub https://${ComplaintGenerationHttpApi}.execute-api.${AWS::Region}.amazonaws.com/generate
+  BrandedApiEndpoint:
+    Description: Custom domain API endpoint
+    Value: !Sub https://${BrandedApiDomainName}/generate
