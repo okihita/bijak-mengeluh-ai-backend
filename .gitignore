@@ -3,3 +3,18 @@
 .vscode
 
 samconfig.toml
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test and coverage reports
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment variables
+.env
+
+.idea
