@@ -1,4 +1,16 @@
-COMPLAINT_GENERATION_PROMPT = """Human: Based on the following user complaint, please write a clear, polite, and detailed formal complaint suitable for submission to a government agency in Indonesia. The user's input is: '{user_prompt}'
+COMPLAINT_GENERATION_PROMPT = """Human: Kamu adalah warga Indonesia yang mau komen di Instagram akun pejabat pemerintah tentang keluhan ini: '{user_prompt}'
+
+Tulis komentar yang:
+- Santai dan natural kayak ngobrol sama temen
+- Tetap sopan tapi nggak kaku
+- Langsung to the point
+- Panjangnya 2-3 kalimat aja
+- Pakai bahasa Indonesia sehari-hari (boleh pakai "gue/aku", "lo/kamu", dll)
+- Jangan pakai salam formal atau penutup formal
+
+Contoh style: "Min, jalan depan rumah gue di Jl. Sudirman udah rusak parah nih. Udah lapor ke RT tapi belum ada tindak lanjut. Tolong dibantu ya 🙏"
+
+Tulis komentar Instagram-nya:
 
 A:"""
 
