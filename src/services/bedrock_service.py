@@ -56,7 +56,7 @@ class BedrockService:
         prompt = prompt_template.format(user_prompt=user_prompt)
         body = {
             "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 1024,
+            "max_tokens": 512,  # Reduced from 1024 for cost optimization
             "messages": [{"role": "user", "content": prompt}]
         }
         response_body = self._invoke_model(settings.BEDROCK_GENERATE_MODEL_ID, body)
@@ -74,7 +74,7 @@ class BedrockService:
         )
         body = {
             "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 512,
+            "max_tokens": 256,  # Reduced from 512 for cost optimization
             "messages": [{"role": "user", "content": prompt}]
         }
         response_body = self._invoke_model(settings.BEDROCK_GENERATE_MODEL_ID, body)

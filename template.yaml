@@ -76,7 +76,7 @@ Resources:
       Runtime: python3.12
       Architectures:
         - x86_64
-      MemorySize: 1024 # Increased from 512 for better performance
+      MemorySize: 512 # Optimized for cost (was 1024)
       Timeout: 60
       Environment:
         Variables:
@@ -110,7 +110,7 @@ Resources:
       Runtime: python3.12
       Architectures:
         - x86_64
-      MemorySize: 768 # Increased from 512
+      MemorySize: 512 # Optimized for cost (was 768)
       Timeout: 30
       Environment:
         Variables:
