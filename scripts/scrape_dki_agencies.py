@@ -5,6 +5,7 @@ Scrape DKI Jakarta agencies with LLM verification
 import json
 import os
 import time
+from decimal import Decimal
 from typing import Dict, List
 import boto3
 import requests
@@ -42,21 +43,21 @@ DKI_CITIES = [
 
 # Keywords mapping
 KEYWORDS_MAP = {
-    "Kesehatan": ["kesehatan", "rumah sakit", "puskesmas", "vaksin", "covid", "dokter", "obat"],
-    "Perhubungan": ["transportasi", "transjakarta", "busway", "parkir", "tilang", "macet", "jalan"],
-    "Pekerjaan Umum": ["jalan rusak", "infrastruktur", "drainase", "banjir", "trotoar"],
-    "Pendidikan": ["sekolah", "guru", "siswa", "ujian", "ppdb"],
-    "Sosial": ["bantuan sosial", "bansos", "pkh", "lansia", "disabilitas"],
-    "Lingkungan Hidup": ["sampah", "kebersihan", "polusi", "limbah", "taman"],
-    "Perumahan": ["rumah", "rusun", "sewa", "kpr", "perumahan"],
-    "Perindustrian": ["industri", "pabrik", "izin usaha", "umkm"],
-    "Perdagangan": ["pasar", "pedagang", "pkl", "harga", "sembako"],
-    "Pariwisata": ["wisata", "hotel", "tempat wisata", "monas", "ancol"],
-    "Kebudayaan": ["budaya", "museum", "seni", "festival"],
-    "Pemuda dan Olahraga": ["olahraga", "gor", "lapangan", "pemuda"],
-    "Ketahanan Pangan": ["pangan", "beras", "sembako", "harga pangan"],
-    "Kependudukan": ["ktp", "kk", "akta", "dukcapil", "e-ktp"],
-    "Komunikasi dan Informatika": ["internet", "wifi", "website", "aplikasi", "digital"]
+    "Kesehatan": ["kesehatan", "rumah", "sakit", "puskesmas", "vaksin", "covid", "dokter", "obat", "rs", "hospital"],
+    "Perhubungan": ["transportasi", "transjakarta", "busway", "parkir", "tilang", "macet", "bus", "angkot"],
+    "Pekerjaan Umum": ["jalan", "rusak", "infrastruktur", "drainase", "banjir", "trotoar", "lampu", "jembatan", "gorong"],
+    "Pendidikan": ["sekolah", "guru", "siswa", "ujian", "ppdb", "pendidikan"],
+    "Sosial": ["bantuan", "sosial", "bansos", "pkh", "lansia", "disabilitas"],
+    "Lingkungan Hidup": ["sampah", "kebersihan", "polusi", "limbah", "taman", "lingkungan"],
+    "Perumahan": ["rumah", "rusun", "sewa", "kpr", "perumahan", "hunian"],
+    "Perindustrian": ["industri", "pabrik", "izin", "usaha", "umkm"],
+    "Perdagangan": ["pasar", "pedagang", "pkl", "harga", "sembako", "dagang"],
+    "Pariwisata": ["wisata", "hotel", "tempat", "monas", "ancol", "tourism"],
+    "Kebudayaan": ["budaya", "museum", "seni", "festival", "kebudayaan"],
+    "Pemuda dan Olahraga": ["olahraga", "gor", "lapangan", "pemuda", "sport"],
+    "Ketahanan Pangan": ["pangan", "beras", "sembako", "harga", "makanan"],
+    "Kependudukan": ["ktp", "kk", "akta", "dukcapil", "e-ktp", "kartu", "keluarga"],
+    "Komunikasi dan Informatika": ["internet", "wifi", "website", "aplikasi", "digital", "kominfo"]
 }
 
 
@@ -191,7 +192,7 @@ def scrape_agency(name: str, location: str, level: str) -> Dict:
         'website': verified.get('website'),
         'phone': verified.get('phone'),
         'email': verified.get('email'),
-        'confidence': verified.get('confidence', 0.0),
+        'confidence': Decimal(str(verified.get('confidence', 0.0))),
         'reasoning': verified.get('reasoning', ''),
         'created_at': time.strftime('%Y-%m-%dT%H:%M:%SZ'),
         'updated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ')

@@ -5,6 +5,7 @@ from typing import Dict, Any
 from concurrent.futures import ThreadPoolExecutor
 
 from services import BedrockService, PineconeService, SocialLookupService
+from services.dynamodb_matcher import DynamoDBMatcher
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -13,13 +14,14 @@ logger.setLevel(logging.INFO)
 bedrock_service = BedrockService()
 pinecone_service = PineconeService()
 social_lookup_service = SocialLookupService()
+dynamodb_matcher = DynamoDBMatcher()
 
 def process_complaint(user_prompt: str, tone: str = "formal") -> Dict[str, Any]:
     """
     Main business logic to process a user complaint with parallel execution.
-    1. Generate embedding from user prompt
-    2. Find relevant ministries via Pinecone
-    3. Generate formal complaint text (parallel with step 2)
+    1. Try DynamoDB keyword matching first (fast, cheap)
+    2. Fallback to Pinecone if DynamoDB returns no results
+    3. Generate formal complaint text (parallel)
     4. Generate rationale for top ministry (parallel with social lookup)
     5. Retrieve social media handle
     
@@ -27,24 +29,22 @@ def process_complaint(user_prompt: str, tone: str = "formal") -> Dict[str, Any]:
         user_prompt: The user's complaint text
         tone: The tone of the complaint (formal, funny, angry)
     """
-    # Step 1: Generate embedding (required for next steps)
-    query_embedding = bedrock_service.get_embedding(user_prompt)
-    if not query_embedding:
-        return {"error": "Tidak bisa membuat embedding. Coba lagi ya."}
+    # Step 1: Try DynamoDB first
+    suggested_contacts = dynamodb_matcher.match_agencies(user_prompt, top_k=3)
     
-    # Step 2 & 3: Run ministry search and text generation in parallel
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        future_contacts = executor.submit(
-            pinecone_service.find_relevant_ministries, query_embedding, 3
-        )
-        future_text = executor.submit(
-            bedrock_service.generate_complaint_text, user_prompt, tone
-        )
-        
-        suggested_contacts = future_contacts.result()
-        generated_text = future_text.result()
+    # Fallback to Pinecone if no DynamoDB results
+    if not suggested_contacts:
+        logger.info("DynamoDB returned no results, falling back to Pinecone")
+        query_embedding = bedrock_service.get_embedding(user_prompt)
+        if query_embedding:
+            suggested_contacts = pinecone_service.find_relevant_ministries(query_embedding, 3)
+    else:
+        logger.info(f"DynamoDB matched {len(suggested_contacts)} agencies")
     
-    # Step 4 & 5: Generate rationale and get social handle in parallel
+    # Step 2: Generate complaint text in parallel
+    generated_text = bedrock_service.generate_complaint_text(user_prompt, tone)
+    
+    # Step 3 & 4: Generate rationale and get social handle in parallel
     rationale = ""
     social_handle_info = {"handle": "NOT_FOUND", "status": "none"}
     
