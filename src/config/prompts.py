@@ -1,18 +1,53 @@
-COMPLAINT_GENERATION_PROMPT = """Human: Kamu adalah warga Indonesia yang mau komen di Instagram akun pejabat pemerintah tentang keluhan ini: '{user_prompt}'
+COMPLAINT_GENERATION_PROMPT_FORMAL = """Human: Kamu adalah warga Indonesia yang mau komen di Instagram akun pejabat pemerintah tentang keluhan ini: '{user_prompt}'
 
 Tulis komentar yang:
-- Santai dan natural kayak ngobrol sama temen
-- Tetap sopan tapi nggak kaku
+- Formal dan sopan
+- Profesional tapi tetap ramah
 - Langsung to the point
-- Panjangnya 2-3 kalimat aja
-- Pakai bahasa Indonesia sehari-hari (boleh pakai "gue/aku", "lo/kamu", dll)
+- Panjangnya 2-3 kalimat
+- Pakai bahasa Indonesia yang baik dan benar
 - Jangan pakai salam formal atau penutup formal
 
-Contoh style: "Min, jalan depan rumah gue di Jl. Sudirman udah rusak parah nih. Udah lapor ke RT tapi belum ada tindak lanjut. Tolong dibantu ya 🙏"
+Contoh style: "Mohon perhatiannya untuk jalan di Jl. Sudirman yang kondisinya rusak parah. Sudah dilaporkan ke RT namun belum ada tindak lanjut. Terima kasih atas perhatiannya 🙏"
 
 Tulis komentar Instagram-nya:
 
 A:"""
+
+COMPLAINT_GENERATION_PROMPT_FUNNY = """Human: Kamu adalah warga Indonesia yang mau komen di Instagram akun pejabat pemerintah tentang keluhan ini: '{user_prompt}'
+
+Tulis komentar yang:
+- Lucu dan menghibur tapi tetap sopan
+- Pakai humor ringan dan sedikit sarkasme
+- Langsung to the point
+- Panjangnya 2-3 kalimat
+- Pakai bahasa Indonesia sehari-hari yang santai
+- Boleh pakai emoji yang relevan
+
+Contoh style: "Min, jalan depan rumah gue kayak medan perang nih 😅 Udah 3 bulan nunggu diperbaiki, apa lagi nunggu jadi danau dulu? Tolong dibantu dong Min, kasian motor gue 🙏"
+
+Tulis komentar Instagram-nya:
+
+A:"""
+
+COMPLAINT_GENERATION_PROMPT_ANGRY = """Human: Kamu adalah warga Indonesia yang mau komen di Instagram akun pejabat pemerintah tentang keluhan ini: '{user_prompt}'
+
+Tulis komentar yang:
+- Tegas dan menunjukkan kekesalan
+- Borderline insulting tapi masih dalam batas wajar
+- Langsung to the point dan menuntut
+- Panjangnya 2-3 kalimat
+- Pakai bahasa Indonesia yang kuat dan emosional
+- Tetap hindari kata-kata kasar atau vulgar
+
+Contoh style: "Serius nih Min, jalan depan rumah gue udah kayak kubangan kerbau! Udah 3 bulan lapor tapi cuma dijawab 'ditindaklanjuti'. Kapan sih kerja beneran? Pajak gue bayar buat apa? 😤"
+
+Tulis komentar Instagram-nya:
+
+A:"""
+
+# Keep the original as default
+COMPLAINT_GENERATION_PROMPT = COMPLAINT_GENERATION_PROMPT_FORMAL
 
 RATIONALE_GENERATION_PROMPT = """Human: Here is a user's complaint:
 <complaint>

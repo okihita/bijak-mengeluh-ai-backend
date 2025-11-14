@@ -41,10 +41,19 @@ class BedrockService:
         response_body = self._invoke_model(settings.BEDROCK_EMBED_MODEL_ID, body)
         return response_body.get('embeddings', [[]])[0]
     
-    def generate_complaint_text(self, user_prompt: str) -> str:
-        """Generates a formal complaint text from a user's prompt."""
-        logger.info("Generating formal complaint text")
-        prompt = prompts.COMPLAINT_GENERATION_PROMPT.format(user_prompt=user_prompt)
+    def generate_complaint_text(self, user_prompt: str, tone: str = "formal") -> str:
+        """Generates a complaint text from a user's prompt with specified tone."""
+        logger.info(f"Generating complaint text with tone: {tone}")
+        
+        # Select prompt based on tone
+        if tone == "funny":
+            prompt_template = prompts.COMPLAINT_GENERATION_PROMPT_FUNNY
+        elif tone == "angry":
+            prompt_template = prompts.COMPLAINT_GENERATION_PROMPT_ANGRY
+        else:  # default to formal
+            prompt_template = prompts.COMPLAINT_GENERATION_PROMPT_FORMAL
+        
+        prompt = prompt_template.format(user_prompt=user_prompt)
         body = {
             "anthropic_version": "bedrock-2023-05-31",
             "max_tokens": 1024,

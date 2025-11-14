@@ -14,7 +14,7 @@ bedrock_service = BedrockService()
 pinecone_service = PineconeService()
 social_lookup_service = SocialLookupService()
 
-def process_complaint(user_prompt: str) -> Dict[str, Any]:
+def process_complaint(user_prompt: str, tone: str = "formal") -> Dict[str, Any]:
     """
     Main business logic to process a user complaint with parallel execution.
     1. Generate embedding from user prompt
@@ -22,6 +22,10 @@ def process_complaint(user_prompt: str) -> Dict[str, Any]:
     3. Generate formal complaint text (parallel with step 2)
     4. Generate rationale for top ministry (parallel with social lookup)
     5. Retrieve social media handle
+    
+    Args:
+        user_prompt: The user's complaint text
+        tone: The tone of the complaint (formal, funny, angry)
     """
     # Step 1: Generate embedding (required for next steps)
     query_embedding = bedrock_service.get_embedding(user_prompt)
@@ -34,7 +38,7 @@ def process_complaint(user_prompt: str) -> Dict[str, Any]:
             pinecone_service.find_relevant_ministries, query_embedding, 3
         )
         future_text = executor.submit(
-            bedrock_service.generate_complaint_text, user_prompt
+            bedrock_service.generate_complaint_text, user_prompt, tone
         )
         
         suggested_contacts = future_contacts.result()
@@ -75,6 +79,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         body = json.loads(event.get('body', '{}'))
         user_prompt = body.get('prompt')
+        tone = body.get('tone', 'formal')  # Default to formal if not provided
         
         if not user_prompt:
             logger.warning("'prompt' is missing from request body")
@@ -92,7 +97,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         start_time = time.time()
-        result = process_complaint(user_prompt)
+        result = process_complaint(user_prompt, tone)
         elapsed_time = time.time() - start_time
         
         logger.info(f"Processing completed in {elapsed_time:.2f} seconds")
