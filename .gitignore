@@ -1,8 +1,13 @@
+# AWS SAM
 .aws-sam
-.venv
-.vscode
-
 samconfig.toml
+
+# Python virtual environment
+.venv
+
+# IDE
+.vscode
+.idea
 
 # Python cache and compiled files
 __pycache__/
@@ -16,5 +21,3 @@ htmlcov/
 
 # Environment variables
 .env
-
-.idea
