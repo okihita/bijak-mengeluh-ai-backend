@@ -72,7 +72,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/ # Points to your code folder
-      Handler: lambda_functions.lambda_handler
+      Handler: handlers.complaint_handler.lambda_handler
       Runtime: python3.12
       Architectures:
         - x86_64
@@ -106,7 +106,7 @@ Resources:
     Type: AWS::Serverless::Function # Create a new Lambda function
     Properties:
       CodeUri: src/
-      Handler: social_finder.lambda_handler
+      Handler: handlers.social_finder_handler.lambda_handler
       Runtime: python3.12
       Architectures:
         - x86_64
