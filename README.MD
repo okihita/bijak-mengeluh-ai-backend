@@ -1,5 +1,11 @@
 
-# Bijak Mengeluh AI Backend
+# Bijak Mengeluh - Backend
+
+> 🧠 AI processing engine for complaint generation and ministry matching
+
+**Part of the Bijak Mengeluh ecosystem** | [Frontend Repo](https://github.com/okihita/aic-complaint-app) | [Style Guide](../STYLE_GUIDE.md)
+
+---
 
 ## Overview
 This repository contains AWS Lambda functions and associated resources for the Bijak Mengeluh complaint generation system.

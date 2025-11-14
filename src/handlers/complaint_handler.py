@@ -78,18 +78,19 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     try:
         body = json.loads(event.get('body', '{}'))
-        user_prompt = body.get('prompt')
+        # Support both 'complaint' (new) and 'prompt' (legacy) for backward compatibility
+        user_complaint = body.get('complaint') or body.get('prompt')
         tone = body.get('tone', 'formal')  # Default to formal if not provided
         
-        if not user_prompt:
-            logger.warning("'prompt' is missing from request body")
+        if not user_complaint:
+            logger.warning("'complaint' is missing from request body")
             return {
                 'statusCode': 400,
                 'headers': {'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({'error': 'Keluhan belum diisi. Tulis dulu keluhannya ya.'})
             }
         
-        if len(user_prompt.strip()) < 20:
+        if len(user_complaint.strip()) < 20:
             return {
                 'statusCode': 400,
                 'headers': {'Access-Control-Allow-Origin': '*'},
@@ -97,7 +98,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         start_time = time.time()
-        result = process_complaint(user_prompt, tone)
+        result = process_complaint(user_complaint, tone)
         elapsed_time = time.time() - start_time
         
         logger.info(f"Processing completed in {elapsed_time:.2f} seconds")
