@@ -2,7 +2,7 @@ import json
 import time
 import logging
 from typing import Dict, Any
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 from services import BedrockService, PineconeService, SocialLookupService
 
