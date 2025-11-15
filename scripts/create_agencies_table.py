@@ -2,13 +2,17 @@
 """
 Create DynamoDB table for agencies
 """
+import os
 import boto3
 
+AWS_REGION = os.getenv('AWS_REGION', 'ap-southeast-2')
+TABLE_NAME = os.getenv('AGENCIES_TABLE_NAME', 'agencies')
+
 def create_agencies_table():
-    dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-2')
+    dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
     
     table = dynamodb.create_table(
-        TableName='agencies',
+        TableName=TABLE_NAME,
         KeySchema=[
             {'AttributeName': 'agency_id', 'KeyType': 'HASH'},
         ],

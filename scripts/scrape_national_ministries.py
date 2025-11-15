@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Scrape 34 national ministries"""
 import os
-os.environ['SERPER_API_KEY'] = '844a99ba96ce92fa47ad538acc0edb6527996d5c'
+import time
+
+# Ensure SERPER_API_KEY is set
+if not os.getenv('SERPER_API_KEY'):
+    raise ValueError("SERPER_API_KEY environment variable must be set")
 
 from scrape_dki_agencies import scrape_agency, store_agency
-import time
 
 NATIONAL_MINISTRIES = [
     ("Kementerian Dalam Negeri", ["ktp", "kk", "akta", "dukcapil", "pemda", "daerah"]),

@@ -12,7 +12,8 @@ import requests
 
 # Configuration
 SERPER_API_KEY = os.getenv('SERPER_API_KEY')
-AWS_REGION = 'ap-southeast-2'
+AWS_REGION = os.getenv('AWS_REGION', 'ap-southeast-2')
+TABLE_NAME = os.getenv('AGENCIES_TABLE_NAME', 'agencies')
 
 # DKI Jakarta agencies
 DKI_PROVINCIAL_DINAS = [
@@ -150,7 +151,7 @@ def extract_keywords(agency_name: str) -> List[str]:
 def store_agency(agency_data: Dict):
     """Store agency in DynamoDB"""
     dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
-    table = dynamodb.Table('agencies')
+    table = dynamodb.Table(TABLE_NAME)
     
     # Store main record
     table.put_item(Item=agency_data)

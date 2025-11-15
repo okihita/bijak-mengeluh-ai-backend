@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
 
-PROFILE="bijak-mengeluh-aws-iam"
-REGION="ap-southeast-2"
+# Configuration - override with environment variables
+PROFILE="${AWS_PROFILE:-bijak-mengeluh-aws-iam}"
+REGION="${AWS_REGION:-ap-southeast-2}"
 
 echo "=== Bijak Mengeluh - Deployment ==="
 echo ""

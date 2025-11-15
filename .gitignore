@@ -42,3 +42,8 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated script outputs
+scripts/dki_agencies.json
+scripts/national_ministries.json
+scripts/*.log
