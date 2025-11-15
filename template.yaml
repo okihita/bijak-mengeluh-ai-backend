@@ -86,8 +86,17 @@ Resources:
           FINDER_FUNCTION_NAME: !GetAtt BijakMengeluhSocialFinderFunction.Arn
       Policies:
         - AmazonBedrockFullAccess # Grants permissions to call Bedrock
-        - DynamoDBCrudPolicy: # Grants CRUD permissions to the specified table
+        - DynamoDBCrudPolicy: # Grants CRUD permissions to the cache table
             TableName: !Ref BijakMengeluhCacheTable
+        - Statement: # DynamoDB agencies table permissions
+            Effect: Allow
+            Action:
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+            Resource:
+              - arn:aws:dynamodb:ap-southeast-2:*:table/agencies
+              - arn:aws:dynamodb:ap-southeast-2:*:table/agencies/index/*
         - Statement: # Custom IAM statement to allow invoking the finder function
             Effect: Allow
             Action:
