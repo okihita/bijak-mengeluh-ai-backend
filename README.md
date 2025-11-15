@@ -1,3 +1,5 @@
+DEPRECATED IN FAVOR OF MONOREPO
+
 # Bijak Mengeluh - Backend
 
 AWS Lambda backend for AI complaint generation and agency matching.
